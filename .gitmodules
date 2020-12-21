@@ -1,0 +1,3 @@
+[submodule "deployments/aws"]
+	path = deployments/aws
+	url = https://github.com/terraform-aws-modules/terraform-aws-ecs.git

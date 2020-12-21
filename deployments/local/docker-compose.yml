@@ -1,0 +1,46 @@
+version: '3'
+services:
+  zero:
+    container_name: zero
+    image: dgraph/dgraph:latest
+    volumes:
+      - /tmp/data:/dgraph
+    ports:
+      - 5080:5080
+      - 6080:6080
+    restart: on-failure
+    command: dgraph zero --my=zero:5080
+  alpha:
+    container_name: alpha
+    image: dgraph/dgraph:latest
+    volumes:
+      - /tmp/data:/dgraph
+    ports:
+      - 8080:8080
+      - 9080:9080
+    restart: on-failure
+    command: dgraph alpha --whitelist 172.17.0.0:172.21.0.0 --my=alpha:7080 --zero=zero:5080
+  ratel:
+    image: dgraph/dgraph:latest
+    ports:
+      - 8000:8000
+    command: dgraph-ratel
+
+  mediamath:
+    container_name: media-math-demo
+    build:
+      context: ../..
+      dockerfile: deployments/local/Dockerfile
+      args:
+        - PROJECT
+        - ENV
+        - TEAM
+        - GO111MODULE
+    command: media-math-demo
+    ports:
+      - "1080:1080"
+    restart: always
+    volumes:
+      - ../../:/go/src/github.com/swizzley/media-math-demo
+    depends_on:
+      - alpha
